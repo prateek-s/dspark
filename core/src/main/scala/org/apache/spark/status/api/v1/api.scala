@@ -55,25 +55,6 @@ case class ApplicationAttemptInfo private[spark](
 }
 
 
-/** Notes: Once we get a deflation target, decide on what to do 
-  */
-class ResourceDeflation private[spark](
-  deflTarget: String) {
-
-  def parseTarget(): String = {
-    return deflTarget 
-  }
-
-  def estimateRecomputation(): Int = {
-    return 1
-  }
-
-  def shufflePending(): Int = {
-    return 0
-  }
-}
-
-
 class ExecutorStageSummary private[spark](
     val taskTime : Long,
     val failedTasks : Int,

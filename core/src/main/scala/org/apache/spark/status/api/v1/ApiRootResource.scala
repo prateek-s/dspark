@@ -55,7 +55,7 @@ private[v1] class ApiRootResource extends ApiRequestContext {
   /**  XXX How to get the GET arguments */
 
   @Path("deflate")
-  def trydeflate(): Class[ResourceDeflation] = classOf[ResourceDeflation]
+  def deflation(): Class[ResourceDeflator] = classOf[ResourceDeflator]
 
 }
 
