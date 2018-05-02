@@ -22,18 +22,26 @@ import javax.ws.rs.core.MediaType
 
 import org.apache.spark.SparkException
 import org.apache.spark.scheduler.StageInfo
-import org.apache.spark.status.api.v1.StageStatus._
-import org.apache.spark.status.api.v1.TaskSorting._
+import org.apache.spark.status.api.v1._
+//import org.apache.spark.status.api.v1.TaskSorting._
 import org.apache.spark.ui.SparkUI
 
+import org.apache.spark.scheduler.StageInfo
+import org.apache.spark.storage.StorageLevel
+//import org.apache.spark.status.api.v1.StageData
 
+import scala.collection.mutable.{Buffer, ListBuffer}
+
+import org.apache.spark.status.AppStatusStore
+
+import org.apache.spark.{JobExecutionStatus, SecurityManager, SparkConf, SparkContext}
 
 /** Notes: Once we get a deflation target, decide on what to do 
   */
 
 
 @Produces(Array(MediaType.APPLICATION_JSON))
-private[v1] class ResourceDeflator {
+private[v1] class ResourceDeflator extends BaseAppResource {
 
   //XXX This can be tricky. Can we pass the executor IDs and the resource to be reduced from each?
   // [executor-id:(cpu, mem)]
@@ -52,6 +60,30 @@ private[v1] class ResourceDeflator {
   def shufflePending(): Int = {
     return 0
   }
+
+  @GET
+  @Path("num-stages")
+  def stageTest(): Int = {
+    val activeStages = Buffer[StageData]()
+    //how is this actually filled? 
+
+    //can create frp, AppStatusStore.createLiveStore(conf)
+    //or use the one already created in sparkcontext.
+
+    withUI { ui =>      
+      val statusStore = ui.store
+      val activeStages = statusStore.activeStages()
+      return activeStages.length 
+    }
+
+  }
+
+  @GET
+  @Path("task-deps")
+  def taskDeps() {
+
+  }
+
 }
 
 

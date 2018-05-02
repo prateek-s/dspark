@@ -1,4 +1,14 @@
 
+* Running 
+
+Branch: def1
+
+[skylake|spark]$ ./build/mvn  -DskipTests -Dcheckstyle.skip=true package -pl core
+
+Takes <1 minute 
+
+* Gen Spark 
+
 There is now a PeriodicRDDCheckpointer!!!
 
 /rdd/util/PeriodicRDDCheckpointer.scala
@@ -31,3 +41,25 @@ Keep record of operation times to get recomputation time and other task details
 
 /core/src/main/scala/org/apache/spark/deploy/history/
 
+
+* Status 
+
+Most of the useful metrics are collected in: 
+core/src/main/scala/org/apache/spark/status/LiveEntity.scala
+
+TaskInfo 
+
+** AppStatusStore 
+
+can create frp, AppStatusStore.createLiveStore(conf)
+
+or use the one already created in sparkcontext.
+
+
+
+
+* TODO 
+
+- Get stages 
+- Get current task information for each stage 
+- 

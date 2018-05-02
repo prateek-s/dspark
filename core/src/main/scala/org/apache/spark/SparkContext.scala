@@ -21,7 +21,7 @@ import java.io._
 import java.net.URI
 import java.util.{Arrays, Locale, Properties, ServiceLoader, UUID}
 import java.util.concurrent.{ConcurrentHashMap, ConcurrentMap}
-import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger, AtomicReference}
+import java.util.concurrauent.atomic.{AtomicBoolean, AtomicInteger, AtomicReference}
 
 import scala.collection.JavaConverters._
 import scala.collection.Map
