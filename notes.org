@@ -1,0 +1,26 @@
+
+There is now a PeriodicRDDCheckpointer!!!
+
+/rdd/util/PeriodicRDDCheckpointer.scala
+
+* UI Server location 
+
+    attachHandler(createRedirectHandler(
+      "/stages/stage/kill", "/stages/", stagesTab.handleKillRequest,
+      httpMethods = Set("GET", "POST")))
+in 
+
+core/src/main/scala/org/apache/spark/ui/SparkUI.scala 
+
+/core/src/main/scala/org/apache/spark/ui/scope/RDDOperationGraph.scala 
+
+* HTTP API Endpoint 
+
+core/src/main/scala/org/apache/spark/status/api/v1/
+
+* History Server 
+
+Keep record of operation times to get recomputation time and other task details
+
+/core/src/main/scala/org/apache/spark/deploy/history/
+
