@@ -18,6 +18,13 @@ core/src/main/scala/org/apache/spark/ui/SparkUI.scala
 
 core/src/main/scala/org/apache/spark/status/api/v1/
 
+
+ApiRootResource.scala : API endpoints registered using @Path("deflate") 
+api.scala : class definitions 
+
+
+
+
 * History Server 
 
 Keep record of operation times to get recomputation time and other task details
