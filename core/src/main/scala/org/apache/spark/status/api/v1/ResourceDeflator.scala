@@ -64,9 +64,39 @@ private[v1] class ResourceDeflator extends BaseAppResource {
     return 1
   }
 
+
+  def isShuffle(sr:ShuffleReadMetrics, sw:ShuffleWriteMetrics): Boolean = {
+    val total = sr.localBytesRead + sr.remoteBytesRead + sw.bytesWritten
+
+    if (total > 0)
+      return true
+
+    return false 
+  }
+
+
   @GET
   @Path("shuffling")
   def shufflePending(): Int = {
+    // Can we use TaskMetrics for this?
+    // non-shuffle tasks will have shuffle read/write metrics all zero?
+    withUI { ui =>
+      val statusStore = ui.store
+      for(stage <- statusStore.activeStages()) {
+        val stageId = stage.stageId
+        val attemptId = stage.attemptId
+        val taskData = statusStore.taskList(stageId, attemptId,  maxTasks=100)
+        for(td <- taskData) {
+          if(td.taskMetrics.isDefined) {
+            val tm: TaskMetrics  = td.taskMetrics.get
+            if(isShuffle(tm.shuffleReadMetrics, tm.shuffleWriteMetrics)) {
+              return 1
+            }
+          }
+        } //for tasks
+      } //for stages
+
+    } //with UI
     return 0
   }
 
@@ -100,6 +130,9 @@ private[v1] class ResourceDeflator extends BaseAppResource {
   @GET
   @Path("task-deps")
   def taskDeps() {
+    //Try to infer if shuffle or not based on the graph structure?
+
+
   }
 
 
