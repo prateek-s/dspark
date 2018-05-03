@@ -79,15 +79,28 @@ private[v1] class ResourceDeflator extends BaseAppResource {
       val activeStages = statusStore.activeStages()
       return activeStages.length 
     }
-
   }
+
+  @GET
+  @Path("stage-progress")
+  def stageProgress() : Seq[Double] = {
+    //In most(?) cases, stages are bookended by shuffle operations.
+    //The goal is to determine how far away we are from a shuffle.
+    //Thus, we can use the ratio of {tasks completed}/{total tasks} to infer this
+
+    withUI { ui =>
+      val statusStore = ui.store
+      val activeStages = statusStore.activeStages()
+      var progress = 0
+      activeStages.map( s => s.numCompleteTasks.toDouble/s.numTasks )
+    }
+  }
+
 
   @GET
   @Path("task-deps")
   def taskDeps() {
-
   }
 
+
 }
-
-
