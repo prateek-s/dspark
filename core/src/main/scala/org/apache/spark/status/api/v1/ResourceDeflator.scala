@@ -74,6 +74,11 @@ private[v1] class ResourceDeflator extends BaseAppResource {
     return false 
   }
 
+  def taskRunning(td: TaskData): Boolean = {
+    val TASK_FINISHED_STATES = Set("FAILED", "KILLED", "SUCCESS")
+    return !TASK_FINISHED_STATES.contains(td.status)
+  }
+
 
   @GET
   @Path("shuffling")
@@ -86,8 +91,10 @@ private[v1] class ResourceDeflator extends BaseAppResource {
         val stageId = stage.stageId
         val attemptId = stage.attemptId
         val taskData = statusStore.taskList(stageId, attemptId,  maxTasks=100)
+        // We need to make sure that this is a "current" task not completed yet
         for(td <- taskData) {
-          if(td.taskMetrics.isDefined) {
+          //TODO XXX get correct task status string 
+          if(taskRunning(td) && td.taskMetrics.isDefined) {
             val tm: TaskMetrics  = td.taskMetrics.get
             if(isShuffle(tm.shuffleReadMetrics, tm.shuffleWriteMetrics)) {
               return 1

@@ -64,7 +64,9 @@ or use the one already created in sparkcontext.
 - Get current task information for each stage 
 - Reclaim fraction parsing and logging 
 - Infer shuffle using Wide/narrow dependency? 
+::DONE:: - Infer if a task is a shuffle based on bytes read etc 
 - Executor killing/maintenance/black-list? 
 - Executor respawning
 ::DONE:: - Num tasks remaining in a stage can be a good heuristic? 
-
+- get correct task status string instead of "Running"
+  
