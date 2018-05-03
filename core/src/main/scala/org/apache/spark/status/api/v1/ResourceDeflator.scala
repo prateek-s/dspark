@@ -49,6 +49,15 @@ private[v1] class ResourceDeflator extends BaseAppResource {
    return ""  
   }
 
+
+  @GET
+  @Path("reclaim-frac")
+  def reclaimFrac(): Int = {
+    //Return what fraction of resources are we actually willing to sacrifice 
+    //For now, maybe we can just specify a fraction, and then reclaim those executors if we are willing? 
+    return 0 
+  }
+
   @GET
   @Path("estimateRecomputation")
   def estimateRecomputation(): Int = {
@@ -63,14 +72,9 @@ private[v1] class ResourceDeflator extends BaseAppResource {
 
   @GET
   @Path("num-stages")
-  def stageTest(): Int = {
-    val activeStages = Buffer[StageData]()
-    //how is this actually filled? 
+  def numStages(): Int = {
 
-    //can create frp, AppStatusStore.createLiveStore(conf)
-    //or use the one already created in sparkcontext.
-
-    withUI { ui =>      
+    withUI { ui =>
       val statusStore = ui.store
       val activeStages = statusStore.activeStages()
       return activeStages.length 

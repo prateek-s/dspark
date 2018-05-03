@@ -62,4 +62,8 @@ or use the one already created in sparkcontext.
 
 - Get stages 
 - Get current task information for each stage 
+- Reclaim fraction parsing and logging 
+- Infer shuffle using Wide/narrow dependency? 
+- Executor killing/maintenance/black-list? 
+- Executor respawning
 - 
