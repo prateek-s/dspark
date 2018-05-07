@@ -73,6 +73,10 @@ private[scheduler] class BlacklistTracker (
   private val executorIdToFailureList = new HashMap[String, ExecutorFailureList]()
   val executorIdToBlacklistStatus = new HashMap[String, BlacklistedExecutor]()
   val nodeIdToBlacklistExpiryTime = new HashMap[String, Long]()
+
+
+  //XXX The above collections maintain the necessary blacklist state 
+
   /**
    * An immutable copy of the set of nodes that are currently blacklisted.  Kept in an
    * AtomicReference to make [[nodeBlacklist()]] thread-safe.
@@ -215,6 +219,29 @@ private[scheduler] class BlacklistTracker (
       }
     }
   }
+
+//////////////////////////////////////////////////////////////////
+
+  def updateBlacklistForDeflation (host: String, exec: String): Unit = {
+    val now = clock.getTimeMillis()
+    val DEFLATION_TIMEOUT_MILLIS = 100*3600*1000 
+    val expiryTimeForNewBlacklists = now + DEFLATION_TIMEOUT_MILLIS
+
+    if(executorIdToBlacklistStatus.contains(exec)) {
+      logInfo("Trying to blacklist already blacklisted executor: " + exec);
+      return
+    }
+
+    executorIdToBlacklistStatus.put(exec, BlacklistedExecutor(host, expiryTimeForNewBlacklists))
+    // We hardcoded number of failure tasks to 1 for fetch failure, because there's no
+    // reattempt for such failure.
+    listenerBus.post(SparkListenerExecutorBlacklisted(now, exec, 1))
+    updateNextExpiryTime()
+    killBlacklistedExecutor(exec)
+
+  }
+
+//////////////////////////////////////////////////////////////////
 
   def updateBlacklistForSuccessfulTaskSet(
       stageId: Int,

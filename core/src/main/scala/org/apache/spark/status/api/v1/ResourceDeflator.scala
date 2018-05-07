@@ -143,8 +143,9 @@ private[v1] class ResourceDeflator extends BaseAppResource {
   }
 
   //Input should be the executor ID, surely? 
-  def executorBlacklist() {
-
+  def BlacklistExecutor(execId: String, host: String) {
+    // Need to also add for the taskset? Only place blacklist is being used?
+    // 
 
   }
 
