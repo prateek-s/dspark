@@ -153,8 +153,8 @@ private[v1] class ResourceDeflator extends BaseAppResource {
       val sched = sc.taskScheduler
       //var _s = sc._pubsched 
       //val btracker = sc.TaskSchedulerImpl.blacklistTrackerOpt
-      //val bt = sched.blacklistTracker
-      //bt.updateBlacklistForDeflation(host, execId)
+      val bt = sc.getblt 
+      bt.updateBlacklistForDeflation(host, execId)
     }
 
   }

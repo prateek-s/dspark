@@ -254,7 +254,9 @@ class SparkContext(config: SparkConf) extends Logging {
 
     //XXX For deflation 
   def getTaskSched: TaskScheduler =  _taskScheduler
-  var blacklistTracker: Option[BlacklistTracker] = _
+  var blacklistTracker:Option[BlacklistTracker] = _
+  def getblt: BlacklistTracker = blacklistTracker.get
+
   // var blacklistTracker: Option[BlacklistTracker] = _ 
 
   ////////////////////////
