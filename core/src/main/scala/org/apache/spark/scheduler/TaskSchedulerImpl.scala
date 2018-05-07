@@ -743,7 +743,9 @@ private[spark] object TaskSchedulerImpl {
         case b: ExecutorAllocationClient => Some(b)
         case _ => None
       }
-      Some(new BlacklistTracker(sc, executorAllocClient))
+      val bt = Some(new BlacklistTracker(sc, executorAllocClient))
+      sc.blacklistTracker = bt
+      return bt 
     } else {
       None
     }

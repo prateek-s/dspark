@@ -58,6 +58,7 @@ import org.apache.spark.storage._
 import org.apache.spark.storage.BlockManagerMessages.TriggerThreadDump
 import org.apache.spark.ui.{ConsoleProgressBar, SparkUI}
 import org.apache.spark.util._
+import org.apache.spark.scheduler.BlacklistTracker
 
 /**
  * Main entry point for Spark functionality. A SparkContext represents the connection to a Spark
@@ -212,6 +213,7 @@ class SparkContext(config: SparkConf) extends Logging {
   private var _files: Seq[String] = _
   private var _shutdownHookRef: AnyRef = _
   private var _statusStore: AppStatusStore = _
+  var _pubsched: TaskScheduler = _
 
   /* ------------------------------------------------------------------------------------- *
    | Accessors and public fields. These provide access to the internal state of the        |
@@ -247,6 +249,18 @@ class SparkContext(config: SparkConf) extends Logging {
 
   // An asynchronous listener bus for Spark events
   private[spark] def listenerBus: LiveListenerBus = _listenerBus
+
+
+
+    //XXX For deflation 
+  def getTaskSched: TaskScheduler =  _taskScheduler
+  var blacklistTracker: Option[BlacklistTracker] = _
+  // var blacklistTracker: Option[BlacklistTracker] = _ 
+
+  ////////////////////////
+
+
+
 
   // This function allows components created by SparkEnv to be mocked in unit tests:
   private[spark] def createSparkEnv(

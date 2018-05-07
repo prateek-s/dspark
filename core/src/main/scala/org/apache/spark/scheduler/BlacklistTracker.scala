@@ -47,7 +47,8 @@ import org.apache.spark.util.{Clock, SystemClock, Utils}
  * called by multiple threads, callers must already have a lock on the TaskSchedulerImpl.  The
  * one exception is [[nodeBlacklist()]], which can be called without holding a lock.
  */
-private[scheduler] class BlacklistTracker (
+//private[scheduler]
+class BlacklistTracker (
     private val listenerBus: LiveListenerBus,
     conf: SparkConf,
     allocationClient: Option[ExecutorAllocationClient],
@@ -70,7 +71,7 @@ private[scheduler] class BlacklistTracker (
    * to do so.  But it will not grow too large, because as soon as an executor gets too many
    * failures, we blacklist the executor and remove its entry here.
    */
-  private val executorIdToFailureList = new HashMap[String, ExecutorFailureList]()
+  val executorIdToFailureList = new HashMap[String, ExecutorFailureList]()
   val executorIdToBlacklistStatus = new HashMap[String, BlacklistedExecutor]()
   val nodeIdToBlacklistExpiryTime = new HashMap[String, Long]()
 
@@ -491,4 +492,5 @@ private[scheduler] object BlacklistTracker extends Logging {
   }
 }
 
-private final case class BlacklistedExecutor(node: String, expiryTime: Long)
+//private 
+final case class BlacklistedExecutor(node: String, expiryTime: Long)

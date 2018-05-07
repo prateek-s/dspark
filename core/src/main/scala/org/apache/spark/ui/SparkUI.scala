@@ -54,6 +54,8 @@ private[spark] class SparkUI private (
 
   var appId: String = _
 
+  var blacklistTracker: Option[BlacklistTracker] = _ 
+
   private var streamingJobProgressListener: Option[SparkListener] = None
 
   /** Initialize all components of the server. */

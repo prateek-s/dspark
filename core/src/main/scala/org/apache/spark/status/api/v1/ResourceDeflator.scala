@@ -145,8 +145,20 @@ private[v1] class ResourceDeflator extends BaseAppResource {
   //Input should be the executor ID, surely? 
   def BlacklistExecutor(execId: String, host: String) {
     // Need to also add for the taskset? Only place blacklist is being used?
-    // 
+    // Main task: get the blacklist tracker object handle
+
+    withUI { ui =>
+      val sc = ui.sc.get 
+      val foo = sc.sparkUser 
+      val sched = sc.taskScheduler
+      //var _s = sc._pubsched 
+      //val btracker = sc.TaskSchedulerImpl.blacklistTrackerOpt
+      //val bt = sched.blacklistTracker
+      //bt.updateBlacklistForDeflation(host, execId)
+    }
 
   }
 
-}
+////////////////////////////////////////////////////////////  
+
+} //END of class 
