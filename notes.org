@@ -56,6 +56,33 @@ can create frp, AppStatusStore.createLiveStore(conf)
 or use the one already created in sparkcontext.
 
 
+* Executor Blacklisting 
+
+scheduler checks if an executor is blacklisted before every scheduling decision.
+
+scheduler/TaskSetBlackList.scala : add to blacklistedExecs collection. (/thats it?/)
+
+updateBlackListForFailedTask adds the exec/node to the above list. Called by : ::TODO:: 
+
+SparkListenerBus event!
+
+sched/BlackListTracker.scala : determines whether to blacklist based on task failures. This also has isExecutorBlackListed, which is different from isExecutorBlackListedForTaskSet in the TaskSetBlackList file 
+
+So, we add an executor to the list that BlackListTracker maintains? 
+
+Alternatively, can use TaskSchedulerImpl.scala:removeExecutor(id, reason), which has the same effect? So what's the whole point of blacklisting?
+
+** Big question: Blacklist or remove executors
+
+*** Blacklist 
+- easier to remove from blacklist later
+
+*** Removing
+- Sure about loss of Resources 
+- Executors added through resource offers. In coarse grained mode, presumably this is only called on slave startup, and so once an executor is removed, we cannot be re-added?
+
+
+
 
 
 * TODO 
@@ -70,3 +97,8 @@ or use the one already created in sparkcontext.
 ::DONE:: - Num tasks remaining in a stage can be a good heuristic? 
 - get correct task status string instead of "Running"
   
+
+Can use hosttoexecutors in TaskSchedulerImpl for sacrificing executors 
+
+
+
