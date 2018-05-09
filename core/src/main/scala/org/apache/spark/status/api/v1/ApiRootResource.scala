@@ -54,6 +54,9 @@ private[v1] class ApiRootResource extends ApiRequestContext {
 
   /**  XXX How to get the GET arguments */
 
+
+  //For some reason, this 404's. So move all this functionality to the
+  //above oneapplicationresource class. 
   @Path("deflate")
   def deflation(): Class[ResourceDeflator] = classOf[ResourceDeflator]
 
