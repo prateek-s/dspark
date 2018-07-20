@@ -7,6 +7,23 @@ Branch: def1
 
 Takes <1 minute 
 
+* Testing
+
+/Presumably call the HTTP API/?
+
+http://localhost:4040/api/v1/applications/local-1525801590553/try-deflate
+
+::TODO:: Make script for getting the application ID and calling the right API 
+
+#+BEGIN_SRC bash
+
+#!/bin/bash 
+appid = curl http://localhost:4040/api/v1/applications | jq 
+
+curl http://localhost:4040/api/v1/applications/$appid/try-deflate
+
+#+END_SRC 
+
 * Gen Spark 
 
 There is now a PeriodicRDDCheckpointer!!!

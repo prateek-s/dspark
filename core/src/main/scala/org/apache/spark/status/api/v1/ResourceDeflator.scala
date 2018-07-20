@@ -36,6 +36,17 @@ import org.apache.spark.status.AppStatusStore
 
 import org.apache.spark.{JobExecutionStatus, SecurityManager, SparkConf, SparkContext}
 
+/** FUNCTIONALITY MOVED TO OneApplicationResource.scala */
+
+
+
+
+
+
+
+
+
+
 /** Notes: Once we get a deflation target, decide on what to do 
   */
 
