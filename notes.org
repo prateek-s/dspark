@@ -1,5 +1,5 @@
 
-* Running 
+* Compiling  
 
 Branch: def1
 
@@ -18,11 +18,24 @@ http://localhost:4040/api/v1/applications/local-1525801590553/try-deflate
 #+BEGIN_SRC bash
 
 #!/bin/bash 
-appid = curl http://localhost:4040/api/v1/applications | jq 
+appid = curl http://localhost:4040/api/v1/applications | jq '.[-1].id'
 
 curl http://localhost:4040/api/v1/applications/$appid/try-deflate
 
 #+END_SRC 
+
+* Running 
+
+Figure out a way to easily run/terminate long-running Spark job (SparkPi?) that we can use to test executor loss etc. 
+
+#+BEGIN_SRC bash
+
+./bin/run-example SparkPi 100000 
+
+#+END_SRC 
+
+:TODO: Num executors, connect to existing master? etc. 
+
 
 * Gen Spark 
 
@@ -107,7 +120,7 @@ Alternatively, can use TaskSchedulerImpl.scala:removeExecutor(id, reason), which
 - Sure about loss of Resources 
 - Executors added through resource offers. In coarse grained mode, presumably this is only called on slave startup, and so once an executor is removed, we cannot be re-added?
 
-
+XXX THere is a developerApi killExecutors in SparkContext.scala that we can use directly? Works as long as we dont have dynamic allocation turned on. Can just use that instead of the blacklisting mechanism? 
 
 
 

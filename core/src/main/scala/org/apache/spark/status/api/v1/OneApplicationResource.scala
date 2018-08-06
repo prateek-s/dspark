@@ -223,7 +223,7 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
   }
 
 
-  //Input should be the executor ID, surely?
+  // Use the blacklist wrapper for killing executors. 
   def BlacklistExecutor(execId: String, host: String) = {
     // Need to also add for the taskset? Only place blacklist is being used?
     // Main task: get the blacklist tracker object handle
@@ -240,6 +240,16 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
 
   }
 
+  //Use the developerAPI to directly kill an executor.
+  // XXX How to access the dev API though? 
+  def KillExecutor(execId: String) = {
+    withUI { ui =>
+      val sc = ui.sc.get
+      val kill_status = sc.killExecutor(execId)
+    }
+
+  }
+
 
   @GET
   @Path("reclaim-executors")
@@ -247,7 +257,7 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
     //Give number of executors to sacrifice and reclaim 
     //The main top-level call.
     //Stash everything in here. Can call different policies to choose executors differently? 
-
+    return 0 
   }
 
 

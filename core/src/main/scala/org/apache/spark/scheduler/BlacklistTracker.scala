@@ -151,9 +151,11 @@ class BlacklistTracker (
     nextExpiryTime = math.min(execMinExpiry, nodeMinExpiry)
   }
 
+  
   private def killBlacklistedExecutor(exec: String): Unit = {
     if (conf.get(config.BLACKLIST_KILL_ENABLED)) {
       allocationClient match {
+        //XXX what is the allocationclient? 
         case Some(a) =>
           logInfo(s"Killing blacklisted executor id $exec " +
             s"since ${config.BLACKLIST_KILL_ENABLED.key} is set.")
@@ -228,17 +230,19 @@ class BlacklistTracker (
     val DEFLATION_TIMEOUT_MILLIS = 100*3600*1000 
     val expiryTimeForNewBlacklists = now + DEFLATION_TIMEOUT_MILLIS
 
+    logInfo("Deflation driven executor blacklist: "+exec) ;
+
     if(executorIdToBlacklistStatus.contains(exec)) {
       logInfo("Trying to blacklist already blacklisted executor: " + exec);
       return
     }
 
     executorIdToBlacklistStatus.put(exec, BlacklistedExecutor(host, expiryTimeForNewBlacklists))
-    // We hardcoded number of failure tasks to 1 for fetch failure, because there's no
-    // reattempt for such failure.
+
     listenerBus.post(SparkListenerExecutorBlacklisted(now, exec, 1))
-    updateNextExpiryTime()
-    killBlacklistedExecutor(exec)
+    //TODO: What are the other listener actions? 
+    updateNextExpiryTime() //Do we need this? 
+    killBlacklistedExecutor(exec) // Actual killing happens here
 
   }
 
