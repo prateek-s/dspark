@@ -152,8 +152,6 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
     }
 
 
-
-
   def isShuffle(sr:ShuffleReadMetrics, sw:ShuffleWriteMetrics): Boolean = {
     val total = sr.localBytesRead + sr.remoteBytesRead + sw.bytesWritten
 
@@ -243,6 +241,14 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
   }
 
 
+  @GET
+  @Path("reclaim-executors")
+  def reclaimExecutors(num: Int): Int = {
+    //Give number of executors to sacrifice and reclaim 
+    //The main top-level call.
+    //Stash everything in here. Can call different policies to choose executors differently? 
+
+  }
 
 
   /******************************************************************************/

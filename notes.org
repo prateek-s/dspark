@@ -45,12 +45,21 @@ core/src/main/scala/org/apache/spark/ui/SparkUI.scala
 
 core/src/main/scala/org/apache/spark/status/api/v1/
 
+/core/src/main/scala/org/apache/spark/status/api/v1/OneApplicationResource.scala 
 
 ApiRootResource.scala : API endpoints registered using @Path("deflate") 
 api.scala : class definitions 
 
 
+* Rest API 
 
+The main idea (AFAIR) was to create a bunch of HTTP endpoints that we can then call. 
+
+Executors killed using the blacklist mechanism. 
+
+Information for deflation: isShuffle, num-stages, progress, etc. 
+
+TODO: 
 
 * History Server 
 
@@ -102,7 +111,7 @@ Alternatively, can use TaskSchedulerImpl.scala:removeExecutor(id, reason), which
 
 
 
-* TODO 
+**** TODO 
 
  ::DONE::  - Get stages 
 - Get current task information for each stage 
@@ -116,6 +125,3 @@ Alternatively, can use TaskSchedulerImpl.scala:removeExecutor(id, reason), which
   
 
 Can use hosttoexecutors in TaskSchedulerImpl for sacrificing executors 
-
-
-
