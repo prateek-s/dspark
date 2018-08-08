@@ -126,8 +126,9 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
   }
 
 
-/*************************  Application Deflation ********************************/
+/*************************  Application Deflation ****************************/
 
+  /**** API Testing/debugging helpers ******/
 
   @GET
   @Path("try-deflate")
@@ -136,6 +137,34 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
   }
 
 
+  @GET
+  @Path("exec-id-test")
+  def getActualExecIds(): Seq[String] = {
+    withUI { ui =>
+      val sc = ui.sc.get
+      return sc.getExecutorIds()
+    }
+  }
+
+  /************ Top-level API calls ******************/
+
+  @GET
+  @Path("reclaim-executor")
+  def reclaimExecutor(@QueryParam("dryRun") dryRun: Int, @QueryParam("policy") policy: String): Map[String, Any] = {
+
+ 
+    val (id, host) = pickSacrifice(policy) 
+    val (cpu, mem) = execSize(id) 
+    val sMap = Map("id"->id, "host"->host, "cpu"->cpu, "mem"->mem)
+
+    if(dryRun > 0) {
+      KillExecutor(id) // Do we have a return code for this? Or just best effort?
+    }
+    return sMap
+  }
+
+
+  /********* Shuffle Heuristic ********************/ 
 
   def isShuffle(sr:ShuffleReadMetrics, sw:ShuffleWriteMetrics): Boolean = {
     val total = sr.localBytesRead + sr.remoteBytesRead + sw.bytesWritten
@@ -208,7 +237,7 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
   }
 
 
-  /*******************/
+  /******** Bin-packing helpers *****/
 
   //Cpu cores, memory size (in what units??)
   def execSize(execId: String) : (Int, Long) = {
@@ -222,7 +251,7 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
   }
 
 
-  /*******************/
+  /********** Executor Killing ******/
 
   // Use the blacklist wrapper for killing executors. 
   def BlacklistExecutor(execId: String, host: String) = {
@@ -251,57 +280,38 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
 
   }
 
-  def pickSacrifice() : (String, String) = {
-    // Choose some executor to blacklist
-    // Ideally, go through all and see which stages we are ok with impacting the most
+
+  /******** Policies *************/
+
+  def victim_last() : ExecutorSummary = {
     withUI { ui =>
       val statusStore = ui.store
-      val execlist = statusStore.executorList(true)
-      
 
+      val execlist = statusStore.executorList(true)
       //Picking _some_ executor might still help us with stragglers.
       //We still need to figure out how large the executors are.
       //Better do that here rather than outside Spark? 
       val victim = execlist.last
-      val id = victim.id
-      val hostPort = victim.hostPort
-      val host: String = hostPort.split(":")(0) //from storeTypes
-      return (id, host)
-
-    } //withUI
-  }
-
-
-  @GET
-  @Path("reclaim-executor")
-  def reclaimExecutor(@QueryParam("dryRun") dryRun: Int): Map[String, Any] = {
-    //Give number of executors to sacrifice and reclaim 
-    //The main top-level call.
-    //Stash everything in here. Can call different policies to choose executors differently?
-
-    //XXX: "id" is just 0,1,2 etc. Surely that is not the same as "execId", which is used to globally identify executors and kill them? How to convert between the two?
-    // WHew, Ok, turns out that these small numerical IDs are global, since exec-id-test reports the same numbers. Problem averted. 
-
-    val (id, host) = pickSacrifice() 
-    val (cpu, mem) = execSize(id) 
-    val sMap = Map("id"->id, "host"->host, "cpu"->cpu, "mem"->mem)
-
-    //logInfo("Executor that will be sacrificed: "+id)
-    if(dryRun > 0) {
-      KillExecutor(id) // Do we have a return code for this? Or just best effort?
-    }
-    return sMap
-  }
-
-
-  @GET
-  @Path("exec-id-test")
-  def getActualExecIds(): Seq[String] = {
-    withUI { ui =>
-      val sc = ui.sc.get
-      return sc.getExecutorIds()
+      return victim
     }
   }
+
+
+ 
+
+  def pickSacrifice(policy: String) : (String, String) = {
+    // Choose some executor to blacklist
+    // Ideally, go through all and see which stages we are ok with impacting the most
+
+    val victim = victim_last()
+    val id = victim.id
+    val hostPort = victim.hostPort
+    val host: String = hostPort.split(":")(0) //from storeTypes
+    return (id, host)
+
+  }
+
+
 
   /******************************************************************************/
 
