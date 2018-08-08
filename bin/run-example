@@ -22,4 +22,6 @@ if [ -z "${SPARK_HOME}" ]; then
 fi
 
 export _SPARK_CMD_USAGE="Usage: ./bin/run-example [options] example-class [example args]"
+echo "${SPARK_HOME}"
+
 exec "${SPARK_HOME}"/bin/spark-submit run-example "$@"

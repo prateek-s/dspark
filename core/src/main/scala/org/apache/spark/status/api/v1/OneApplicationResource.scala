@@ -274,10 +274,13 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
 
   @GET
   @Path("reclaim-executor")
-  def reclaimExecutor(dryRun: Int): Map[String, Any] = {
+  def reclaimExecutor(@QueryParam("dryRun") dryRun: Int): Map[String, Any] = {
     //Give number of executors to sacrifice and reclaim 
     //The main top-level call.
     //Stash everything in here. Can call different policies to choose executors differently?
+
+    //XXX: "id" is just 0,1,2 etc. Surely that is not the same as "execId", which is used to globally identify executors and kill them? How to convert between the two?
+    // WHew, Ok, turns out that these small numerical IDs are global, since exec-id-test reports the same numbers. Problem averted. 
 
     val (id, host) = pickSacrifice() 
     val (cpu, mem) = execSize(id) 
@@ -290,6 +293,15 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
     return sMap
   }
 
+
+  @GET
+  @Path("exec-id-test")
+  def getActualExecIds(): Seq[String] = {
+    withUI { ui =>
+      val sc = ui.sc.get
+      return sc.getExecutorIds()
+    }
+  }
 
   /******************************************************************************/
 

@@ -13,7 +13,7 @@ Takes <1 minute
 
 http://localhost:4040/api/v1/applications/local-1525801590553/try-deflate
 
-::TODO:: Make script for getting the application ID and calling the right API 
+Script for getting the application ID and calling the right API, is killmechtest.sh 
 
 #+BEGIN_SRC bash
 
@@ -26,11 +26,21 @@ curl http://localhost:4040/api/v1/applications/$appid/try-deflate
 
 * Running 
 
-Figure out a way to easily run/terminate long-running Spark job (SparkPi?) that we can use to test executor loss etc. 
+
+echo "spark.executor.instances     4 " >> conf/spark-defaults.conf
+
+Launch multiple workers on a single machine:
+SPARK_WORKER_INSTANCES=3 ./sbin/start-slaves.sh
+
+
+
+ubuntu@ip-172-31-30-119:~/dspark/bin$ ./spark-submit --master spark://172.31.30.119:7077 --class org.apache.spark.examples.SparkPi --executor-cores 1 --deploy-mode cluster /home/ubuntu/dspark/examples/target/original-spark-examples_2.11-2.3.1-SNAPSHOT.jar 100000
+
+
 
 #+BEGIN_SRC bash
 
-./bin/run-example SparkPi 100000 
+./bin/run-example --num-executors 4 SparkPi 100000 
 
 #+END_SRC 
 
