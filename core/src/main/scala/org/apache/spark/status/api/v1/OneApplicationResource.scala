@@ -135,21 +135,6 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
     return 23
   }
 
-    def sacrificedExecutor() : (String, String) = {
-    // Choose some executor to blacklist
-    // Ideally, go through all and see which stages we are ok with impacting the most
-    withUI { ui =>
-      val statusStore = ui.store
-      val execlist = statusStore.executorList(true)
-      //TODO filter by blacklisted? 
-      val victim = execlist.last
-      val id = victim.id
-      val hostPort = victim.hostPort 
-      val host: String = hostPort.split(":")(0) //from storeTypes
-      return (id, host)
-
-      } //withUI
-    }
 
 
   def isShuffle(sr:ShuffleReadMetrics, sw:ShuffleWriteMetrics): Boolean = {
@@ -250,14 +235,37 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
 
   }
 
+  def pickSacrifice() : (String, String) = {
+    // Choose some executor to blacklist
+    // Ideally, go through all and see which stages we are ok with impacting the most
+    withUI { ui =>
+      val statusStore = ui.store
+      val execlist = statusStore.executorList(true)
+      //TODO filter by blacklisted?
+      val victim = execlist.last
+      val id = victim.id
+      val hostPort = victim.hostPort
+      val host: String = hostPort.split(":")(0) //from storeTypes
+      return (id, host)
+
+    } //withUI
+  }
+
 
   @GET
-  @Path("reclaim-executors")
-  def reclaimExecutors(num: Int): Int = {
+  @Path("reclaim-executor")
+  def reclaimExecutor(): Map[String, String] = {
     //Give number of executors to sacrifice and reclaim 
     //The main top-level call.
-    //Stash everything in here. Can call different policies to choose executors differently? 
-    return 0 
+    //Stash everything in here. Can call different policies to choose executors differently?
+
+    val (id, host) = pickSacrifice() ;
+    val sMap = Map("id"->id, "host"->host)
+
+    //logInfo("Executor that will be sacrificed: "+id)
+    KillExecutor(id) // Do we have a return code for this? Or just best effort?
+
+    return sMap
   }
 
 
