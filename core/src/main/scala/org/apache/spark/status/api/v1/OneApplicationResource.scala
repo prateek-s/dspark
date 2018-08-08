@@ -210,11 +210,14 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
 
   /*******************/
 
-  def execSize(execId: String) : Long = {
+  //Cpu cores, memory size (in what units??)
+  def execSize(execId: String) : (Int, Long) = {
     withUI { ui =>
       val info = ui.store.executorSummary(execId)
       val mem = info.maxMemory
-      return mem
+      val cpu = info.totalCores 
+      val sMap = Map("cpu"->cpu, "mem"->mem)
+      return (cpu, mem)
     }
   }
 
@@ -271,13 +274,14 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
 
   @GET
   @Path("reclaim-executor")
-  def reclaimExecutor(dryRun: Int): Map[String, String] = {
+  def reclaimExecutor(dryRun: Int): Map[String, Any] = {
     //Give number of executors to sacrifice and reclaim 
     //The main top-level call.
     //Stash everything in here. Can call different policies to choose executors differently?
 
-    val (id, host) = pickSacrifice() ;
-    val sMap = Map("id"->id, "host"->host)
+    val (id, host) = pickSacrifice() 
+    val (cpu, mem) = execSize(id) 
+    val sMap = Map("id"->id, "host"->host, "cpu"->cpu, "mem"->mem)
 
     //logInfo("Executor that will be sacrificed: "+id)
     if(dryRun > 0) {
