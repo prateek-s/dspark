@@ -208,6 +208,19 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
   }
 
 
+  /*******************/
+
+  def execSize(execId: String) : Long = {
+    withUI { ui =>
+      val info = ui.store.executorSummary(execId)
+      val mem = info.maxMemory
+      return mem
+    }
+  }
+
+
+  /*******************/
+
   // Use the blacklist wrapper for killing executors. 
   def BlacklistExecutor(execId: String, host: String) = {
     // Need to also add for the taskset? Only place blacklist is being used?
@@ -241,7 +254,11 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
     withUI { ui =>
       val statusStore = ui.store
       val execlist = statusStore.executorList(true)
-      //TODO filter by blacklisted?
+      
+
+      //Picking _some_ executor might still help us with stragglers.
+      //We still need to figure out how large the executors are.
+      //Better do that here rather than outside Spark? 
       val victim = execlist.last
       val id = victim.id
       val hostPort = victim.hostPort
@@ -254,7 +271,7 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
 
   @GET
   @Path("reclaim-executor")
-  def reclaimExecutor(): Map[String, String] = {
+  def reclaimExecutor(dryRun: Int): Map[String, String] = {
     //Give number of executors to sacrifice and reclaim 
     //The main top-level call.
     //Stash everything in here. Can call different policies to choose executors differently?
@@ -263,8 +280,9 @@ private[v1] class AbstractApplicationResource extends BaseAppResource {
     val sMap = Map("id"->id, "host"->host)
 
     //logInfo("Executor that will be sacrificed: "+id)
-    KillExecutor(id) // Do we have a return code for this? Or just best effort?
-
+    if(dryRun > 0) {
+      KillExecutor(id) // Do we have a return code for this? Or just best effort?
+    }
     return sMap
   }
 
