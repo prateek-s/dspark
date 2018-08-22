@@ -3,9 +3,10 @@
 ./bin/spark-submit \
      --master spark://172.31.30.119:7077 \
      --deploy-mode client \
-     --class com.github.ehiggs.spark.terasort.TeraGen \
+     --class com.github.ehiggs.spark.terasort.TeraSort \
      /home/ubuntu/dspark/examples/spark-terasort-1.1-SNAPSHOT-jar-with-dependencies.jar \
-     2G s3a://spark-data-sample/sort
+     file:///hdfs/datasets/20ggen \
+     file:///hdfs/datasets/20gsorted 
 
 #k
 #numIterations
